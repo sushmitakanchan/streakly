@@ -64,7 +64,7 @@ const ProblemPage = () => {
   }, problem, selectedLanguage)
 
   useEffect(()=>{
-    if(activeTab === "submission" && id){
+    if(activeTab === "submissions" && id){
       getSubmissionForProblem(id)
     }
   },[activeTab, id])

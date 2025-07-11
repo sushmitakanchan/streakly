@@ -13,7 +13,7 @@ export const useSubmissionStore = create((set)=>({
         try {
             set({isLoading:true})
             const res = await axiosInstance.get("/submission/get-all-subnmissions")
-            set({submissions:res.data.submission})
+            set({submissions:res.data.submissions})
             toast.success(res.data.message)
         } catch (error) {
             console.log("Error getting all submissions", error);
@@ -26,8 +26,8 @@ export const useSubmissionStore = create((set)=>({
 
     getSubmissionForProblem:async(problemId)=>{
         try {
-            const res = await axiosInstance.get(`/submission/get-submission/${productId}`)
-            set({subsmission:res.data.submission});
+            const res = await axiosInstance.get(`/submission/get-submission/${problemId}`)
+            set({submission:res.data.submissions});
         } catch (error) {
             console.log("Error getting submissions for problem", error);
             toast.error("Error getting submissions for problem")
