@@ -1,7 +1,11 @@
 import React , {useState, useMemo} from 'react'
 import {useAuthStore} from "../store/useAuthStore"
 import {Link} from "react-router-dom"
-import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { Bookmark, PencilIcon, Trash, TrashIcon, Plus, Loader2 } from "lucide-react";
+import { useActions } from '../store/useActions';
+import { usePlaylistStore } from '../store/usePlaylistStore';
+import AddToPlaylistModal from '../components/AddToPlaylistModal'
+import CreatePlaylistModal from '../components/CreatePlaylistModal'
 
 
 const ProblemTable = ({ problems }) => {
@@ -10,6 +14,11 @@ const ProblemTable = ({ problems }) => {
   const [difficulty, setDifficulty] = useState("ALL")
   const [selectedTag, setSelectedTag] = useState("ALL")
   const [currentPage, setCurrentPage] = useState(1)
+  const {isDeletingProblem, onDeleteProblem} = useActions()
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false)
+  const {createPlaylist} = usePlaylistStore()
+  
 
   const difficulties = ["EASY", "MEDIUM", "HARD"]
 
@@ -41,8 +50,14 @@ const ProblemTable = ({ problems }) => {
     return filteredProblems.slice((currentPage-1)*itemsPerPage, currentPage*itemsPerPage)
   },[filteredProblems, currentPage])
 
-  const handleDelete = (id)=>{}
+  const handleDelete = (id)=>{
+    onDeleteProblem(id)
+  }
   const handleAddToPlaylist=(id)=>{}
+
+  const handleCreatePlaylist=async(data)=>{
+    await createPlaylist(data)
+  }
 
     return (
     <div className='w-full max-w-6xl mx-auto mt-10'>
@@ -50,7 +65,7 @@ const ProblemTable = ({ problems }) => {
         <h2 className="text-2xl font-bold">Problems</h2>
         <button
           className="btn btn-primary gap-2"
-          onClick={() => {}}
+          onClick={() => {setIsCreateModalOpen(true)}}
         >
           <Plus className="w-4 h-4" />
           Create Playlist
@@ -156,8 +171,10 @@ const ProblemTable = ({ problems }) => {
                             <button
                               onClick={() => handleDelete(problem.id)}
                               className="btn btn-sm btn-error"
-                            >
-                              <TrashIcon className="w-4 h-4 text-white" />
+                            > {
+                              isDeletingProblem ? <Loader2 className='animate-spin h-4 w-4'/> : <TrashIcon className="w-4 h-4 text-white" />
+                            }
+                              
                             </button>
                             <button disabled className="btn btn-sm btn-warning">
                               <PencilIcon className="w-4 h-4 text-white" />
@@ -204,6 +221,19 @@ const ProblemTable = ({ problems }) => {
           Next
         </button>
       </div>
+      
+            {/* Modals */}
+      <CreatePlaylistModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreatePlaylist}
+      />
+
+      {/* <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      /> */}
     </div>
   )
 }

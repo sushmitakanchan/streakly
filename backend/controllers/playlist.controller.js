@@ -29,7 +29,7 @@ export const getAllListDetails = async(req , res)=>{
             where:{
                 userId: req.user.id
             },
-            includes:{
+            include:{
                 problems:{
                     include:{
                         problem:true
@@ -59,7 +59,7 @@ export const getPlaylistDetails = async(req, res)=>{
                 id:playlistId,
                 userId: req.user.id
             },
-            includes:{
+            include:{
                 problems:{
                     include:{
                         problem:true
@@ -96,10 +96,10 @@ export const addProblemToPlaylist = async(req, res)=>{
         }
         // create records for each problems in the playlist
         const problemsInPlaylist = await db.problemsInPlaylist.createMany({
-            data: problemIds.map((problemId)=>{
+            data: problemIds.map((problemId)=>({
                 playlistId,
                 problemId
-            })
+            }))
         })
 
         res.status(201).json({
