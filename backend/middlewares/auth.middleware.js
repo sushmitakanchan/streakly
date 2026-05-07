@@ -13,7 +13,7 @@ export const authMiddleware = async(req, res, next)=>{
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch (error) {
-            res.status(201).json({
+            return res.status(401).json({
                 message:"Unauthorized - Invalid token"
             })
         }

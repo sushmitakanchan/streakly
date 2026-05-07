@@ -40,10 +40,10 @@ export const register = async(req, res)=>{
             message:"User created successfully",
             user:{
                 id: newUser.id,
-                email:newUser.email,
-                password:newUser.password,
-                role:newUser.role,
-                image:newUser.image
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+                image: newUser.image
             }
         })
     } catch (error) {
@@ -81,15 +81,15 @@ export const login = async(req, res)=>{
             secure:process.env.NODE_ENV !== "development",
             maxAge:1000*60*60*24*7 //7 days
         })
-         res.status(201).json({
+        res.status(200).json({
             success: true,
             message:"User LoggedIn successfully",
             user:{
                 id: user.id,
-                email:user.email,
-                password:user.password,
-                role:user.role,
-                image:user.image
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                image: user.image
             }
         })
     } catch (error) {
