@@ -12,7 +12,7 @@ export const useSubmissionStore = create((set)=>({
     getAllSubmissions:async()=>{
         try {
             set({isLoading:true})
-            const res = await axiosInstance.get("/submission/get-all-subnmissions")
+            const res = await axiosInstance.get("/submission/get-all-submissions")
             set({submissions:res.data.submissions})
             toast.success(res.data.message)
         } catch (error) {
