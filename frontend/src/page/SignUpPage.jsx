@@ -1,185 +1,98 @@
-import React, {useState} from 'react'
-import {useForm} from "react-hook-form"
-import {zodResolver} from "@hookform/resolvers/zod"
-import {Link} from 'react-router-dom'
-import {z} from "zod";
-import AuthImagePattern from '../components/AuthImagePattern'
-import {
-    Code,
-    Eye,
-    EyeOff,
-    Loader2,
-    Lock,
-    Mail,
-} from "lucide-react"
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
+import { AuthShell, PosterSide, Field, SocialRow, Divider, BTN_PRIMARY } from '../components/AuthLayout';
 
+const signUpSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
- const signUpSchema = z.object({
-    email:z.string().email("Enter a valid email"),
-    password:z.string().min(6, "Password must be atleast of 6 characters"),
-    name:z.string().min(3, "Name must be atleast 3 characters")
- })
+const SignUpPage = () => {
+  const { signup, isSigninUp } = useAuthStore();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(signUpSchema),
+  });
 
- const SignUpPage = ()=> {
-    const [showPassword, setShowPassword] = useState(false);
-
-    const {signup, isSigninUp } = useAuthStore()
-
-    const {
-        register,
-        handleSubmit,
-        formState:{errors},
-    }= useForm({
-        resolver:zodResolver(signUpSchema)
-    })
-
-    const onSubmit = async(data)=>{
-        try {
-          await signup(data)
-          console.log("signup data", data);
-        } catch (error) {
-          console.error("SignUp Failed:", error);
-          
-        }
-        
+  const onSubmit = async (data) => {
+    try {
+      await signup(data);
+    } catch (err) {
+      console.error("SignUp failed", err);
     }
+  };
 
-    return (
-       <div className='h-screen grid lg:grid-cols-2'>
-        <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Code className="w-6 h-6 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome </h1>
-              <p className="text-base-content/60">Sign Up to your account</p>
-            </div>
-          </div>
+  return (
+    <AuthShell
+      side={
+        <PosterSide
+          kicker="◆ JOIN THE STREAK"
+          headline={<>Day one,<br/><em>right now.</em></>}
+          sub="2,400 problems. 180 community playlists. Four languages. One cobalt square at a time."
+          badge={{ kicker: "FREE", big: "14d", sub: "TRIAL" }}
+          stats={[{ k: "12,481", l: "ACTIVE TODAY" }, { k: "2,400+", l: "PROBLEMS" }, { k: "47", l: "AVG STREAK" }]}
+          testimonial={{
+            q: "Started for interview prep. Stayed for the streak calendar.",
+            initial: "R", who: "RACHEL K. · 120-DAY STREAK",
+          }}
+        />
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}>
+        <div style={{ fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.2em", color: "var(--cobalt)" }}>CREATE ACCOUNT</div>
+        <h1 style={{ fontFamily: "var(--f-display)", fontSize: 64, lineHeight: 0.95, margin: "10px 0 8px", color: "var(--ink)", letterSpacing: "-0.02em" }}>
+          Make an <em style={{ color: "var(--cobalt)" }}>account.</em>
+        </h1>
+        <p style={{ fontSize: 14, color: "rgba(15,26,61,0.7)", margin: "0 0 28px" }}>
+          Already streaking?{" "}
+          <Link to="/login" style={{ color: "var(--cobalt)", textDecoration: "underline" }}>Sign in →</Link>
+        </p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
-            {/* name */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Name</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Code className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type="text"
-                  {...register("name")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.name ? "input-error" : ""
-                  }`}
-                  placeholder="John Doe"
-                />
-              </div>
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-              )}              
-            </div>
+        <SocialRow />
+        <Divider>or with email</Divider>
 
-            {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type="email"
-                  {...register("email")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.email ? "input-error" : ""
-                  }`}
-                  placeholder="you@example.com"
-                />
-              </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
-            </div>
+        <Field
+          label="Full name"
+          placeholder="Rachel Kim"
+          reg={register("name")}
+          error={errors.name?.message}
+        />
+        <Field
+          label="Email"
+          type="email"
+          placeholder="rachel@gmail.com"
+          reg={register("email")}
+          error={errors.email?.message}
+        />
+        <Field
+          label="Password"
+          type="password"
+          placeholder="••••••••••"
+          helper="At least 6 characters."
+          reg={register("password")}
+          error={errors.password?.message}
+        />
 
-            {/* Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.password ? "input-error" : ""
-                  }`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-              )}
-            </div>
+        <label style={{ display: "flex", gap: 10, alignItems: "start", margin: "8px 0 22px", fontSize: 13, color: "rgba(15,26,61,0.75)", lineHeight: 1.5 }}>
+          <input type="checkbox" defaultChecked style={{ marginTop: 3, width: 16, height: 16, accentColor: "#1E3FA8" }}/>
+          <span>Email me today's problem at 9:00 AM. (Change anytime.)</span>
+        </label>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-             disabled={isSigninUp}
-            >{isSigninUp ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </button>
-          </form>
+        <button type="submit" disabled={isSigninUp} style={BTN_PRIMARY}>
+          {isSigninUp ? <><Loader2 size={16} className="animate-spin" /> Creating account…</> : "Start your streak →"}
+        </button>
 
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Already have an account?{" "}
-              <Link to="/login" className="link link-primary">
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-
-       {/* Right Side - Image/Pattern */}
-      <AuthImagePattern
-        title={"Welcome to our platform!"}
-        subtitle={
-          "Sign up to access our platform and start using our services."
-        }
-      />
-    </div>
-  )
-}
+        <p style={{ fontFamily: "var(--f-mono)", fontSize: 11, color: "rgba(15,26,61,0.55)", marginTop: 18, textAlign: "center", lineHeight: 1.6 }}>
+          BY SIGNING UP YOU AGREE TO OUR TERMS AND PRIVACY POLICY.
+        </p>
+      </form>
+    </AuthShell>
+  );
+};
 
 export default SignUpPage;

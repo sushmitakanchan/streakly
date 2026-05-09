@@ -1,162 +1,91 @@
-import React, {useState} from 'react'
-import {useForm} from "react-hook-form"
-import {zodResolver} from "@hookform/resolvers/zod"
-import {Link} from 'react-router-dom'
-import {z} from "zod";
-import AuthImagePattern from '../components/AuthImagePattern'
-import {
-    Code,
-    Eye,
-    EyeOff,
-    Loader2,
-    Lock,
-    Mail,
-} from "lucide-react"
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
+import { AuthShell, PosterSide, Field, SocialRow, Divider, BTN_PRIMARY, Sparkle } from '../components/AuthLayout';
 
+const loginSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
- const loginSchema = z.object({
-    email:z.string().email("Enter a valid email"),
-    password:z.string().min(6, "Password must be atleast of 6 characters"),
- })
+const LoginPage = () => {
+  const { login, isLoggingIn } = useAuthStore();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
- const LoginPage = ()=> {
-
-    const {isLoggingIn, login} = useAuthStore();
-    const [showPassword, setShowPassword] = useState(false);
-
-
-
-    const {
-        register,
-        handleSubmit,
-        formState:{errors},
-    }= useForm({
-        resolver:zodResolver(loginSchema)
-    })
-
-    const onSubmit = async(data)=>{
-      try {
-          await login(data)
-          
-      } catch (error) {
-        console.error("SignUp failed", error);
-        
-        
-      }        
+  const onSubmit = async (data) => {
+    try {
+      await login(data);
+    } catch (err) {
+      console.error("Login failed", err);
     }
+  };
 
-    return (
-       <div className='h-screen grid lg:grid-cols-2'>
-        <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Code className="w-6 h-6 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome </h1>
-              <p className="text-base-content/60">Login to your account</p>
-            </div>
-          </div>
+  return (
+    <AuthShell
+      side={
+        <PosterSide
+          kicker="◆ WELCOME BACK"
+          headline={<>Don't break<br/><em>the chain.</em></>}
+          sub="Your streak is right where you left it. Today's problem is already in your queue."
+          badge={{ kicker: "DAY", big: "47", bigSize: 56, sub: "STREAK" }}
+          testimonial={{
+            q: "Best part of my morning. Coffee, then a graph problem, then meetings.",
+            initial: "R", who: "RACHEL K. · SR. ENG @ ANTHROPIC",
+          }}
+        />
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 420, width: "100%", margin: "0 auto" }}>
+        <div style={{ fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.2em", color: "var(--cobalt)" }}>SIGN IN</div>
+        <h1 style={{ fontFamily: "var(--f-display)", fontSize: 72, lineHeight: 0.95, margin: "10px 0 8px", color: "var(--ink)", letterSpacing: "-0.02em" }}>
+          Hey, you're <em style={{ color: "var(--cobalt)" }}>back.</em>
+        </h1>
+        <p style={{ fontSize: 14, color: "rgba(15,26,61,0.7)", margin: "0 0 30px" }}>
+          New here?{" "}
+          <Link to="/signup" style={{ color: "var(--cobalt)", textDecoration: "underline" }}>Make an account →</Link>
+        </p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type="email"
-                  {...register("email")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.email ? "input-error" : ""
-                  }`}
-                  placeholder="you@example.com"
-                />
-              </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
-            </div>
+        <SocialRow />
+        <Divider>or</Divider>
 
-            {/* Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                  className={`input input-bordered w-full pl-10 ${
-                    errors.password ? "input-error" : ""
-                  }`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-              )}
-            </div>
+        <Field
+          label="Email"
+          type="email"
+          placeholder="rachel@gmail.com"
+          reg={register("email")}
+          error={errors.email?.message}
+        />
+        <Field
+          label="Password"
+          type="password"
+          placeholder="••••••••••"
+          reg={register("password")}
+          error={errors.password?.message}
+        />
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={isLoggingIn}            
-              >{isLoggingIn ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </button>
-          </form>
+        <label style={{ display: "flex", gap: 8, alignItems: "center", margin: "4px 0 22px", fontSize: 13, color: "rgba(15,26,61,0.8)" }}>
+          <input type="checkbox" defaultChecked style={{ width: 16, height: 16, accentColor: "#1E3FA8" }}/>
+          Remember me on this device
+        </label>
 
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Don't you have an account?{" "}
-              <Link to="/signup" className="link link-primary">
-                Sign up
-              </Link>
-            </p>
-          </div>
+        <button type="submit" disabled={isLoggingIn} style={BTN_PRIMARY}>
+          {isLoggingIn ? <><Loader2 size={16} className="animate-spin" /> Signing in…</> : "Continue your streak →"}
+        </button>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 22, fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.1em", color: "rgba(15,26,61,0.55)" }}>
+          <Sparkle size={10} color="var(--cobalt)" />
+          <span>SECURED · END-TO-END</span>
+          <Sparkle size={10} color="var(--cobalt)" />
         </div>
-      </div>
-
-       {/* Right Side - Image/Pattern */}
-        <AuthImagePattern
-        title={"Welcome back!"}
-        subtitle={
-          "Sign in to continue your journey with us. Don't have an account? Create one now."
-        }
-      />
-    </div>
-  )
-}
+      </form>
+    </AuthShell>
+  );
+};
 
 export default LoginPage;
