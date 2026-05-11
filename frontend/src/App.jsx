@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
-import {Routes, Route, Navigate} from 'react-router-dom'
-import {Toaster} from "react-hot-toast"
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from "react-hot-toast"
 
-import LoginPage  from './page/LoginPage'
-import SignUpPage  from './page/SignUpPage'
-import LandingA from './revamp/landing-a'
+import LoginPage from './page/LoginPage'
+import SignUpPage from './page/SignUpPage'
+import LandingPage from './page/LandingPage'
+import DashboardPage from './page/DashboardPage'
+import AdminDashboardPage from './page/AdminDashboardPage'
+import ProblemsPage from './page/ProblemsPage'
 import { useAuthStore } from './store/useAuthStore'
 import { Loader } from 'lucide-react'
 import Layout from './layout/Layout'
@@ -12,55 +15,69 @@ import AdminRoute from './components/AdminRoute'
 import AddProblem from './page/AddProblem'
 import ProblemPage from './page/ProblemPage'
 
- const App = () => {
-  const {authUser, checkAuth, isCheckingAuth} = useAuthStore()
+const App = () => {
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore()
 
-  useEffect(()=>{
+  useEffect(() => {
     checkAuth()
-  },[checkAuth])
+  }, [checkAuth])
 
-  if(isCheckingAuth && !authUser){
+  if (isCheckingAuth && !authUser) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
-    );
+    )
   }
+
   return (
     <>
-    <div className='flex flex-col w-full'>
-      <Toaster/>
-      <Routes>
-        <Route
-        index
-        element={<LandingA/>}
-        />
+      <div className='flex flex-col w-full'>
+        <Toaster />
+        <Routes>
+          <Route index element={<LandingPage />} />
 
-        <Route
-        path = '/login'
-        element={!authUser ? <LoginPage/>: <Navigate to={"/"}/>}
-         />
-
-         <Route
-         path='/signup'
-         element={!authUser ? <SignUpPage/>: <Navigate to={'/'}/>}
-         />
-
-        <Route path='/' element={<Layout/>}>
+          {/* Auth */}
           <Route
-          path='problem/:id'
-          element={authUser ? <ProblemPage/> : <Navigate to={"/login"}/>}
+            path='/login'
+            element={!authUser ? <LoginPage /> : <Navigate to='/dashboard' />}
           />
-          <Route element={<AdminRoute/>}>
           <Route
-          path='add-problem'
-          element={authUser? <AddProblem/> : <Navigate to="/"/>}
+            path='/signup'
+            element={!authUser ? <SignUpPage /> : <Navigate to='/dashboard' />}
           />
+
+          {/* Dashboard — role-aware, no Layout wrapper */}
+          <Route
+            path='/dashboard'
+            element={
+              authUser
+                ? (authUser.role === 'ADMIN' ? <AdminDashboardPage /> : <DashboardPage />)
+                : <Navigate to='/' />
+            }
+          />
+
+          {/* Problems list — no Layout wrapper */}
+          <Route
+            path='/problems'
+            element={authUser ? <ProblemsPage /> : <Navigate to='/login' />}
+          />
+
+          {/* Problem editor + admin add-problem — inside Layout */}
+          <Route path='/' element={<Layout />}>
+            <Route
+              path='problem/:id'
+              element={authUser ? <ProblemPage /> : <Navigate to='/login' />}
+            />
+            <Route element={<AdminRoute />}>
+              <Route
+                path='add-problem'
+                element={authUser ? <AddProblem /> : <Navigate to='/' />}
+              />
+            </Route>
           </Route>
-        </Route>
-
-      </Routes>
-    </div>
+        </Routes>
+      </div>
     </>
   )
 }
