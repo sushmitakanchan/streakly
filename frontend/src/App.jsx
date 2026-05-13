@@ -10,7 +10,6 @@ import AdminDashboardPage from './page/AdminDashboardPage'
 import ProblemsPage from './page/ProblemsPage'
 import { useAuthStore } from './store/useAuthStore'
 import { Loader } from 'lucide-react'
-import Layout from './layout/Layout'
 import AdminRoute from './components/AdminRoute'
 import AddProblem from './page/AddProblem'
 import ProblemPage from './page/ProblemPage'
@@ -63,18 +62,18 @@ const App = () => {
             element={authUser ? <ProblemsPage /> : <Navigate to='/login' />}
           />
 
-          {/* Problem editor + admin add-problem — inside Layout */}
-          <Route path='/' element={<Layout />}>
+          {/* Problem page — no Layout wrapper (has its own nav) */}
+          <Route
+            path='/problem/:id'
+            element={authUser ? <ProblemPage /> : <Navigate to='/login' />}
+          />
+
+          {/* Admin add-problem — no Layout wrapper (CreateProblemForm has its own shell) */}
+          <Route element={<AdminRoute />}>
             <Route
-              path='problem/:id'
-              element={authUser ? <ProblemPage /> : <Navigate to='/login' />}
+              path='/add-problem'
+              element={authUser ? <AddProblem /> : <Navigate to='/' />}
             />
-            <Route element={<AdminRoute />}>
-              <Route
-                path='add-problem'
-                element={authUser ? <AddProblem /> : <Navigate to='/' />}
-              />
-            </Route>
           </Route>
         </Routes>
       </div>
