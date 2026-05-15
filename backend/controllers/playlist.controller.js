@@ -51,19 +51,17 @@ export const getAllListDetails = async(req , res)=>{
 }
 
 export const getPlaylistDetails = async(req, res)=>{
-
     const {playlistId} = req.params;
     try {
-                const playlists = await db.playlist.findMany({
+        const playlist = await db.playlist.findFirst({
             where:{
-                id:playlistId,
+                id: playlistId,
                 userId: req.user.id
             },
             include:{
                 problems:{
                     include:{
-                        problem:true
-                        
+                        problem: true
                     }
                 }
             }
@@ -72,16 +70,14 @@ export const getPlaylistDetails = async(req, res)=>{
             return res.status(404).json({error: "Playlist not found"});
         }
         res.status(200).json({
-            success:true,
-            message:"Playlist fetched successfully",
-            playlists
+            success: true,
+            message: "Playlist fetched successfully",
+            playlist
         })
     } catch (error) {
         console.error("Error fetching playlist:", error)
         res.status(500).json({error:"Failed to fetch playlist"})
-        
     }
-
 }
 
 export const addProblemToPlaylist = async(req, res)=>{
@@ -95,7 +91,7 @@ export const addProblemToPlaylist = async(req, res)=>{
             })
         }
         // create records for each problems in the playlist
-        const problemsInPlaylist = await db.problemsInPlaylist.createMany({
+        const problemsInPlaylist = await db.problemInPlaylist.createMany({
             data: problemIds.map((problemId)=>({
                 playlistId,
                 problemId
@@ -139,7 +135,7 @@ export const removeProblemFromPlaylist = async(req, res)=>{
         if(!Array.isArray(problemIds) || problemIds.length === 0){
             return res.status(400).json({error:"Invalid or missing problemId"})
         }
-        const deletedProblem = await db.playlist.deleteMany({
+        const deletedProblem = await db.problemInPlaylist.deleteMany({
             where:{
                 playlistId,
                 problemId:{
