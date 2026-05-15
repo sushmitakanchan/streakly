@@ -308,7 +308,13 @@ const ProblemPage = () => {
               >
                 <ppI.Play /> {isExecuting ? "Running..." : "Run code"}
               </button>
-              <button style={ppS.btnSuccess}><ppI.Check /> Submit solution</button>
+              <button
+                style={{ ...ppS.btnSuccess, opacity: isExecuting ? 0.7 : 1 }}
+                onClick={handleRunCode}
+                disabled={isExecuting}
+              >
+                <ppI.Check /> {isExecuting ? "Submitting..." : "Submit solution"}
+              </button>
             </div>
           </div>
         </div>
