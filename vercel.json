@@ -9,7 +9,12 @@
     {
       "src": "backend/src/index.js",
       "use": "@vercel/node",
-      "config": { "includeFiles": ["backend/prisma/**"] }
+      "config": {
+        "includeFiles": [
+          "backend/prisma/**",
+          "backend/src/generated/prisma/**"
+        ]
+      }
     }
   ],
   "routes": [
