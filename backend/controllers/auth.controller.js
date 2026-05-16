@@ -43,7 +43,10 @@ export const register = async(req, res)=>{
                 name: newUser.name,
                 email: newUser.email,
                 role: newUser.role,
-                image: newUser.image
+                image: newUser.image,
+                currentStreak: newUser.currentStreak,
+                maxStreak: newUser.maxStreak,
+                lastSolvedDate: newUser.lastSolvedDate
             }
         })
     } catch (error) {
@@ -89,7 +92,10 @@ export const login = async(req, res)=>{
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                image: user.image
+                image: user.image,
+                currentStreak: user.currentStreak,
+                maxStreak: user.maxStreak,
+                lastSolvedDate: user.lastSolvedDate
             }
         })
     } catch (error) {
