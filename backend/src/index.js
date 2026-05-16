@@ -13,9 +13,14 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.CLIENT_URL,
+].filter(Boolean)
+
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true
+    origin: allowedOrigins,
+    credentials: true
 }))
 
 app.use(express.json());
@@ -31,9 +36,10 @@ app.use("/api/v1/execute-code", executionRoute);
 app.use("/api/v1/submission", submissionRoutes);
 app.use("/api/v1/playlist", playlistRoutes);
 
+if (process.env.VERCEL !== "1") {
+    app.listen(process.env.PORT || 8080, ()=>{
+        console.log("Server is running on port 8080");
+    })
+}
 
-
-app.listen(process.env.PORT, ()=>{
-    console.log("Server is running on port 8080");
-    
-})
+export default app
