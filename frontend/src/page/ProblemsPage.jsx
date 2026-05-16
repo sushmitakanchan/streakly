@@ -4,6 +4,7 @@ import { Logo, Difficulty, Flame } from '../revamp/primitives'
 import { useAuthStore } from '../store/useAuthStore'
 import { useProblemStore } from '../store/useProblemStore'
 import { useSubmissionStore } from '../store/useSubmissionStore'
+import AddToPlaylistModal from '../components/AddToPlaylistModal'
 
 const BTN = {
   fontFamily: 'var(--f-sans)', fontWeight: 600, fontSize: 13,
@@ -29,6 +30,7 @@ export default function ProblemsPage() {
   const [diffFilter, setDiffFilter] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
+  const [playlistProblemId, setPlaylistProblemId] = useState(null)
 
   useEffect(() => {
     getAllProblems()
@@ -76,10 +78,12 @@ export default function ProblemsPage() {
           </nav>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: 999, background: 'var(--cream-50)' }}>
-            <Flame size={16} />
-            <span style={{ fontFamily: 'var(--f-mono)', fontSize: 13, fontWeight: 700 }}>{solvedIds.size}</span>
-          </div>
+          {(authUser?.currentStreak ?? 0) > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: 999, background: 'var(--cream-50)' }}>
+              <Flame size={16} />
+              <span style={{ fontFamily: 'var(--f-mono)', fontSize: 13, fontWeight: 700 }}>{authUser.currentStreak}</span>
+            </div>
+          )}
           <div onClick={logout} title="Sign out" style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--cobalt)', color: 'var(--cream-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--f-display)', fontSize: 16, border: '1.5px solid var(--ink)', cursor: 'pointer' }}>{avatar}</div>
         </div>
       </header>
@@ -176,10 +180,11 @@ export default function ProblemsPage() {
 
           {/* Table */}
           <div style={{ background: 'var(--cream-50)', border: '2px solid var(--ink)', borderRadius: 12, overflow: 'hidden', boxShadow: '4px 4px 0 var(--ink)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 130px', gap: 12, padding: '12px 18px', background: 'var(--cobalt)', color: 'var(--cream-100)', fontFamily: 'var(--f-mono)', fontSize: 10, letterSpacing: '0.16em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 130px 140px', gap: 12, padding: '12px 18px', background: 'var(--cobalt)', color: 'var(--cream-100)', fontFamily: 'var(--f-mono)', fontSize: 10, letterSpacing: '0.16em' }}>
               <span/>
               <span>TITLE & TAGS</span>
               <span>DIFFICULTY</span>
+              <span/>
             </div>
 
             {paginated.length === 0 && (
@@ -189,22 +194,27 @@ export default function ProblemsPage() {
             )}
 
             {paginated.map((p, i) => (
-              <Link
+              <div
                 key={p.id}
-                to={`/problem/${p.id}`}
-                style={{ display: 'grid', gridTemplateColumns: '40px 1fr 130px', gap: 12, padding: '13px 18px', alignItems: 'center', borderTop: i ? '1px dashed rgba(15,26,61,0.18)' : 'none', background: i % 2 === 0 ? 'var(--cream-50)' : 'var(--cream-100)', textDecoration: 'none', color: 'inherit' }}
+                style={{ display: 'grid', gridTemplateColumns: '40px 1fr 130px 140px', gap: 12, padding: '13px 18px', alignItems: 'center', borderTop: i ? '1px dashed rgba(15,26,61,0.18)' : 'none', background: i % 2 === 0 ? 'var(--cream-50)' : 'var(--cream-100)' }}
               >
                 <StatusIcon solved={solvedIds.has(p.id)} />
-                <div style={{ minWidth: 0 }}>
+                <Link to={`/problem/${p.id}`} style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
                   <div style={{ fontFamily: 'var(--f-sans)', fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
                   <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
                     {(p.tags ?? []).slice(0, 4).map(t => (
                       <span key={t} style={{ fontFamily: 'var(--f-mono)', fontSize: 10, letterSpacing: '0.06em', color: 'var(--cobalt)', background: 'rgba(30,63,168,0.08)', padding: '2px 7px', borderRadius: 4 }}>{t}</span>
                     ))}
                   </div>
-                </div>
-                <Difficulty level={fmtDiff(p.difficulty)} />
-              </Link>
+                </Link>
+                <Link to={`/problem/${p.id}`} style={{ textDecoration: 'none' }}>
+                  <Difficulty level={fmtDiff(p.difficulty)} />
+                </Link>
+                <button
+                  onClick={() => setPlaylistProblemId(p.id)}
+                  style={{ padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: 6, background: 'var(--cobalt)', color: 'var(--cream-100)', cursor: 'pointer', display: 'flex', alignItems: 'center', fontSize: 12, fontFamily: 'var(--f-mono)', boxShadow: '2px 2px 0 var(--ink)', whiteSpace: 'nowrap' }}
+                >Add to Playlist</button>
+              </div>
             ))}
           </div>
 
@@ -229,6 +239,12 @@ export default function ProblemsPage() {
           )}
         </section>
       </main>
+
+      <AddToPlaylistModal
+        problemId={playlistProblemId}
+        isOpen={Boolean(playlistProblemId)}
+        onClose={() => setPlaylistProblemId(null)}
+      />
     </div>
   )
 }

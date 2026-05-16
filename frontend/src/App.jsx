@@ -13,6 +13,8 @@ import { Loader } from 'lucide-react'
 import AdminRoute from './components/AdminRoute'
 import AddProblem from './page/AddProblem'
 import ProblemPage from './page/ProblemPage'
+import PlaylistPage from './page/PlaylistPage'
+import PlaylistsPage from './page/PlaylistsPage'
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore()
@@ -66,6 +68,18 @@ const App = () => {
           <Route
             path='/problem/:id'
             element={authUser ? <ProblemPage /> : <Navigate to='/login' />}
+          />
+
+          {/* All playlists */}
+          <Route
+            path='/playlists'
+            element={authUser ? <PlaylistsPage /> : <Navigate to='/login' />}
+          />
+
+          {/* Playlist detail page */}
+          <Route
+            path='/playlist/:playlistId'
+            element={authUser ? <PlaylistPage /> : <Navigate to='/login' />}
           />
 
           {/* Admin add-problem — no Layout wrapper (CreateProblemForm has its own shell) */}

@@ -5,6 +5,7 @@ import { useProblemStore } from "../store/useProblemStore"
 import { useExecutionStore } from '../store/useExecutionStore'
 import { getLanguageId } from "../libs/lang"
 import { useSubmissionStore } from '../store/useSubmissionStore'
+import { useAuthStore } from '../store/useAuthStore'
 import SubmissionResults from '../components/Submission'
 import SubmissionList from '../components/SubmissionsList'
 
@@ -95,15 +96,22 @@ const ProblemPage = () => {
   const [code, setCode] = useState("")
   const [activeTab, setActiveTab] = useState("description")
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
-  const [isBookmarked, setIsBookmarked] = useState(false)
   const [testCases, setTestCases] = useState([])
 
   const { executeCode, submission, isExecuting } = useExecutionStore()
+  const { checkAuth } = useAuthStore()
 
   useEffect(() => {
     getProblemById(id)
     getSubmissionCountForProblem(id)
   }, [id])
+
+  // Refresh authUser after an accepted submission so the streak badge updates
+  useEffect(() => {
+    if (submission?.status === 'Accepted') {
+      checkAuth()
+    }
+  }, [submission])
 
   useEffect(() => {
     if (problem) {
@@ -247,13 +255,6 @@ const ProblemPage = () => {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            style={{ ...ppS.iconBtn, color: isBookmarked ? cobalt : ink, background: isBookmarked ? cream200 : cream50 }}
-          >
-            <ppI.Book />
-          </button>
-          <button style={ppS.iconBtn}><ppI.Share /></button>
           <select style={ppS.select} value={selectedLanguage} onChange={handleLanguageChange}>
             {Object.keys(problem.codeSnippets || {}).map((lang) => (
               <option key={lang} value={lang}>
