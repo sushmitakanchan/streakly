@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
           <nav style={{ display: 'flex', gap: 24, fontFamily: 'var(--f-sans)', fontSize: 14, fontWeight: 500 }}>
             <Link to="/dashboard" style={{ color: 'var(--cobalt)', borderBottom: '2px solid var(--cobalt)', paddingBottom: 4, textDecoration: 'none' }}>Overview</Link>
             <Link to="/problems" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Problems</Link>
-            <Link to="/dashboard" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Playlists</Link>
+            <Link to="/playlists" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Playlists</Link>
           </nav>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -164,7 +164,7 @@ export default function AdminDashboardPage() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
               {(playlists ?? []).slice(0, 4).map((pl, idx) => (
-                <div key={pl.id} style={{ background: 'var(--cream-50)', border: '2px solid var(--ink)', borderRadius: 12, overflow: 'hidden', boxShadow: '4px 4px 0 var(--ink)' }}>
+                <Link key={pl.id} to={`/playlist/${pl.id}`} style={{ background: 'var(--cream-50)', border: '2px solid var(--ink)', borderRadius: 12, overflow: 'hidden', boxShadow: '4px 4px 0 var(--ink)', textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div style={{ height: 110, background: COLORS[idx % COLORS.length], position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ fontFamily: 'var(--f-display)', fontSize: 48, color: 'var(--cream-100)' }}>{pl.problems?.length ?? 0}</span>
                     <div style={{ position: 'absolute', top: 10, left: 12, fontFamily: 'var(--f-mono)', color: 'var(--cream-100)', fontSize: 10, letterSpacing: '0.14em' }}>PLAYLIST</div>
@@ -173,7 +173,7 @@ export default function AdminDashboardPage() {
                     <div style={{ fontFamily: 'var(--f-display)', fontSize: 22, lineHeight: 1.1 }}>{pl.name}</div>
                     <div style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'rgba(15,26,61,0.6)', marginTop: 6 }}>{pl.problems?.length ?? 0} problems</div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

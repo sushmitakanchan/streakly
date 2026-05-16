@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo, Flame, DayChain, ScallopBadge, Difficulty, Heatmap, Ring } from '../revamp/primitives'
 import { useAuthStore } from '../store/useAuthStore'
@@ -43,6 +43,48 @@ export default function DashboardPage() {
 
   const recentSolves = submissions.filter(s => s.status === 'Accepted').slice(0, 5)
 
+  // Build real heatmap data from submissions (52 weeks = 364 days)
+  const { heatmapData, heatmapMonths } = useMemo(() => {
+    const WEEKS = 52
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+    const start = new Date(now)
+    start.setDate(start.getDate() - WEEKS * 7 + 1)
+
+    const dayCounts = {}
+    submissions.forEach(s => {
+      const d = new Date(s.createdAt)
+      d.setHours(0, 0, 0, 0)
+      const key = d.toISOString().split('T')[0]
+      dayCounts[key] = (dayCounts[key] || 0) + 1
+    })
+
+    const data = []
+    for (let w = 0; w < WEEKS; w++) {
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(start)
+        date.setDate(start.getDate() + w * 7 + d)
+        const count = dayCounts[date.toISOString().split('T')[0]] || 0
+        let v = 0
+        if (count >= 1) v = 1
+        if (count >= 2) v = 2
+        if (count >= 4) v = 3
+        if (count >= 6) v = 4
+        data.push(v)
+      }
+    }
+
+    const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+    const months = [0, 1, 2, 3, 4].map(i => {
+      const d = new Date(start)
+      d.setDate(d.getDate() + Math.round(i * (WEEKS * 7 - 1) / 4))
+      const m = MONTHS[d.getMonth()]
+      return i === 0 || d.getMonth() <= 1 ? `${m} '${String(d.getFullYear()).slice(2)}` : m
+    })
+
+    return { heatmapData: data, heatmapMonths: months }
+  }, [submissions])
+
   const langBreakdown = submissions.reduce((acc, s) => {
     acc[s.language] = (acc[s.language] || 0) + 1
     return acc
@@ -78,14 +120,16 @@ export default function DashboardPage() {
           <nav style={{ display: 'flex', gap: 24, fontFamily: 'var(--f-sans)', fontSize: 14, fontWeight: 500 }}>
             <Link to="/dashboard" style={{ color: 'var(--cobalt)', borderBottom: '2px solid var(--cobalt)', paddingBottom: 4, textDecoration: 'none' }}>Dashboard</Link>
             <Link to="/problems" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Problems</Link>
-            <Link to="/dashboard" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Playlists</Link>
+            <Link to="/playlists" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Playlists</Link>
           </nav>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: 999, background: 'var(--cream-50)' }}>
-            <Flame size={16} />
-            <span style={{ fontFamily: 'var(--f-mono)', fontSize: 13, fontWeight: 700 }}>{solvedIds.size}</span>
-          </div>
+          {(authUser?.currentStreak ?? 0) > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: 999, background: 'var(--cream-50)' }}>
+              <Flame size={16} />
+              <span style={{ fontFamily: 'var(--f-mono)', fontSize: 13, fontWeight: 700 }}>{authUser.currentStreak}</span>
+            </div>
+          )}
           <div title="Sign out" onClick={logout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--cobalt)', color: 'var(--cream-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--f-display)', fontSize: 16, border: '1.5px solid var(--ink)', cursor: 'pointer' }}>{avatar}</div>
         </div>
       </header>
@@ -156,9 +200,9 @@ export default function DashboardPage() {
               <span>MORE</span>
             </div>
           </div>
-          <Heatmap weeks={52} scale={14} gap={3} />
+          <Heatmap weeks={52} scale={14} gap={3} data={heatmapData} />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontFamily: 'var(--f-mono)', fontSize: 11, letterSpacing: '0.1em', color: 'rgba(15,26,61,0.6)' }}>
-            <span>MAY '25</span><span>AUG</span><span>NOV</span><span>FEB '26</span><span>MAY '26</span>
+            {heatmapMonths.map(m => <span key={m}>{m}</span>)}
           </div>
         </section>
 
@@ -217,8 +261,8 @@ export default function DashboardPage() {
               <p style={{ fontFamily: 'var(--f-mono)', fontSize: 13, color: 'rgba(15,26,61,0.55)' }}>No playlists yet.</p>
             )}
             {(playlists ?? []).slice(0, 4).map((pl, idx) => (
-              <div key={pl.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderTop: '1px dashed rgba(15,26,61,0.2)' }}>
-                <div style={{ width: 44, height: 44, background: COLORS[idx % COLORS.length], border: '1.5px solid var(--ink)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream-100)', fontFamily: 'var(--f-display)', fontSize: 18, flexShrink: 0 }}>♪</div>
+              <Link key={pl.id} to={`/playlist/${pl.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderTop: '1px dashed rgba(15,26,61,0.2)', textDecoration: 'none', color: 'inherit' }}>
+                <div style={{ width: 44, height: 44, background: COLORS[idx % COLORS.length], border: '1.5px solid var(--ink)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cream-100)', fontFamily: 'var(--f-mono)', fontSize: 13, flexShrink: 0 }}>{`</>`}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontFamily: 'var(--f-sans)', fontWeight: 600, fontSize: 14 }}>{pl.name}</div>
                   <div style={{ height: 4, background: 'rgba(15,26,61,0.12)', borderRadius: 999, marginTop: 6, overflow: 'hidden' }}>
@@ -226,7 +270,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <span style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'rgba(15,26,61,0.7)', flexShrink: 0 }}>{pl.problems?.length ?? 0} probs</span>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

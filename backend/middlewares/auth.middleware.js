@@ -26,7 +26,10 @@ export const authMiddleware = async(req, res, next)=>{
                 image:true,
                 name:true,
                 email:true,
-                role:true
+                role:true,
+                currentStreak:true,
+                maxStreak:true,
+                lastSolvedDate:true
             }
         })
         if(!user){
