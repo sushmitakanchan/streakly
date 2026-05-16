@@ -33,7 +33,7 @@ function LandingPage() {
         <Logo size={28} />
         <nav style={{ display: "flex", gap: 28, fontFamily: "var(--f-sans)", fontSize: 14, fontWeight: 500 }}>
           <Link to="/problems" style={{ color: "var(--ink)", textDecoration: "none" }}>Problems</Link>
-          <Link to="/dashboard" style={{ color: "var(--ink)", textDecoration: "none" }}>Playlists</Link>
+          <Link to="/playlists" style={{ color: "var(--ink)", textDecoration: "none" }}>Playlists</Link>
           <Link to="/dashboard" style={{ color: "var(--ink)", textDecoration: "none" }}>Dashboard</Link>
         </nav>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -42,7 +42,6 @@ function LandingPage() {
               <span style={{ fontFamily: "var(--f-mono)", fontSize: 12, color: "rgba(15,26,61,0.6)" }}>
                 Hey, {authUser.name?.split(' ')[0]}
               </span>
-              <Link to="/dashboard" style={BTN}>Dashboard →</Link>
               <button onClick={logout} style={BTN}>Sign out</button>
             </>
           ) : (
@@ -82,7 +81,7 @@ function LandingPage() {
             )}
           </div>
           <div style={{ display: "flex", gap: 18, marginTop: 32, fontFamily: "var(--f-mono)", fontSize: 12, color: "rgba(15,26,61,0.65)", letterSpacing: "0.06em" }}>
-            <span>★ 4.9 / 5 (3,200+)</span><span>·</span><span>4 LANGUAGES</span>
+            <span>★ 4.9 / 5 (3,200+)</span><span>·</span><span>3 LANGUAGES</span>
           </div>
         </div>
 
@@ -318,7 +317,7 @@ function LandingPage() {
             <div style={{ fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.16em", marginBottom: 12, opacity: 0.7 }}>PRODUCT</div>
             {[
               { label: "Problems", to: "/problems" },
-              { label: "Playlists", to: "/dashboard" },
+              { label: "Playlists", to: "/playlists" },
               { label: "Sign up", to: "/signup" },
             ].map((x) => (
               <div key={x.label} style={{ fontSize: 14, marginBottom: 8 }}>
