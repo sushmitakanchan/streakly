@@ -13,7 +13,6 @@ const ink = "var(--ink)"
 const cobalt = "var(--cobalt)"
 const cream50 = "var(--cream-50)"
 const cream100 = "var(--cream-100)"
-const cream200 = "var(--cream-200)"
 const moss = "var(--moss)"
 const mustard = "var(--mustard)"
 
@@ -48,14 +47,12 @@ const ppS = {
   labelMicro: { fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.14em", color: cobalt, textTransform: "uppercase", marginBottom: 6, display: "block" },
 }
 
-const ppI = {
+const Icons = {
   Home:  ({ s = 16 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>,
   Chev:  ({ s = 12 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
   Clock: ({ s = 12 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
   Users: ({ s = 12 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   Thumb: ({ s = 12 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 9V5a3 3 0 0 0-6 0v4H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h13.4a2 2 0 0 0 2-1.6L22 12a2 2 0 0 0-2-2h-6z"/></svg>,
-  Book:  ({ s = 16 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-3-7 3V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
-  Share: ({ s = 16 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
   File:  ({ s = 14 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
   Code:  ({ s = 14 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
   Chat:  ({ s = 14 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
@@ -231,7 +228,7 @@ const ProblemPage = () => {
             to="/"
             style={{ display: "inline-flex", alignItems: "center", gap: 4, color: cobalt, padding: "8px 10px", border: `2px solid ${ink}`, borderRadius: 8, background: cream50, boxShadow: `2px 2px 0 ${ink}`, flexShrink: 0, textDecoration: "none" }}
           >
-            <ppI.Home /><ppI.Chev />
+            <Icons.Home /><Icons.Chev />
           </Link>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={ppS.kicker}>◆ PROBLEM</div>
@@ -241,15 +238,15 @@ const ProblemPage = () => {
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", fontFamily: "var(--f-mono)", fontSize: 11, letterSpacing: "0.06em", color: "rgba(15,26,61,0.65)" }}>
               <DiffPill level={fmtDiff(problem.difficulty)} />
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                <ppI.Clock /> UPDATED {new Date(problem.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
+                <Icons.Clock /> UPDATED {new Date(problem.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}
               </span>
               <span style={{ color: "rgba(15,26,61,0.3)" }}>·</span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                <ppI.Users /> {submissionCount} SUBMISSIONS
+                <Icons.Users /> {submissionCount} SUBMISSIONS
               </span>
               <span style={{ color: "rgba(15,26,61,0.3)" }}>·</span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: moss }}>
-                <ppI.Thumb /> 95% SUCCESS
+                <Icons.Thumb /> 95% SUCCESS
               </span>
             </div>
           </div>
@@ -270,10 +267,10 @@ const ProblemPage = () => {
           {/* Left: tabs + content */}
           <div style={ppS.cardCobaltShadow}>
             <div style={ppS.tabsBar}>
-              <button style={ppS.tabBtn(activeTab === "description")} onClick={() => setActiveTab("description")}><ppI.File /> Description</button>
-              <button style={ppS.tabBtn(activeTab === "submissions")} onClick={() => setActiveTab("submissions")}><ppI.Code /> Submissions</button>
-              <button style={ppS.tabBtn(activeTab === "discussion")} onClick={() => setActiveTab("discussion")}><ppI.Chat /> Discussion</button>
-              <button style={ppS.tabBtn(activeTab === "hints")} onClick={() => setActiveTab("hints")}><ppI.Bulb /> Hints</button>
+              <button style={ppS.tabBtn(activeTab === "description")} onClick={() => setActiveTab("description")}><Icons.File /> Description</button>
+              <button style={ppS.tabBtn(activeTab === "submissions")} onClick={() => setActiveTab("submissions")}><Icons.Code /> Submissions</button>
+              <button style={ppS.tabBtn(activeTab === "discussion")} onClick={() => setActiveTab("discussion")}><Icons.Chat /> Discussion</button>
+              <button style={ppS.tabBtn(activeTab === "hints")} onClick={() => setActiveTab("hints")}><Icons.Bulb /> Hints</button>
             </div>
             <div style={{ padding: 24 }}>{renderTabContent()}</div>
           </div>
@@ -281,7 +278,7 @@ const ProblemPage = () => {
           {/* Right: Monaco editor */}
           <div style={ppS.card}>
             <div style={ppS.tabsBar}>
-              <button style={ppS.tabBtn(true)}><ppI.Term /> Code editor</button>
+              <button style={ppS.tabBtn(true)}><Icons.Term /> Code editor</button>
             </div>
             <div style={{ height: 600 }}>
               <Editor
@@ -307,14 +304,14 @@ const ProblemPage = () => {
                 onClick={handleRunCode}
                 disabled={isExecuting}
               >
-                <ppI.Play /> {isExecuting ? "Running..." : "Run code"}
+                <Icons.Play /> {isExecuting ? "Running..." : "Run code"}
               </button>
               <button
                 style={{ ...ppS.btnSuccess, opacity: isExecuting ? 0.7 : 1 }}
                 onClick={handleRunCode}
                 disabled={isExecuting}
               >
-                <ppI.Check /> {isExecuting ? "Submitting..." : "Submit solution"}
+                <Icons.Check /> {isExecuting ? "Submitting..." : "Submit solution"}
               </button>
             </div>
           </div>
