@@ -1,0 +1,122 @@
+/* Streakly — Design tokens
+   Retro pamphlet aesthetic: cream + cobalt, chunky display serif,
+   notebook grid texture, scalloped badges. */
+
+:root {
+  /* Surfaces */
+  --cream-50:  #FFF8E7;
+  --cream-100: #FBEBC8;   /* primary background */
+  --cream-200: #F5DDA7;   /* card / raised */
+  --cream-300: #EFD08A;   /* subtle divider */
+  --cream-400: #E6C06A;
+
+  /* Cobalt — primary */
+  --ink:       #0F1A3D;
+  --cobalt-900:#15287A;
+  --cobalt:    #1E3FA8;
+  --cobalt-600:#3257C4;
+  --cobalt-300:#8DA3DD;
+
+  /* Accents */
+  --red:       #D94A3D;
+  --mustard:   #E8B547;
+  --moss:      #4F7A3A;   /* easy difficulty */
+
+  /* Difficulty */
+  --easy:      #4F7A3A;
+  --med:       #C98A1F;
+  --hard:      #C2392E;
+
+  /* Type */
+  --f-display: "DM Serif Display", "Playfair Display", Georgia, serif;
+  --f-sans:    "Bricolage Grotesque", "Inter", -apple-system, system-ui, sans-serif;
+  --f-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --f-body:    "Inter", -apple-system, system-ui, sans-serif;
+
+  /* Radius / shadow — pamphlet has hard corners; use sparingly */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 18px;
+  --shadow-card: 4px 4px 0 var(--ink);
+  --shadow-card-cobalt: 4px 4px 0 var(--cobalt);
+}
+
+/* Notebook grid — used as background overlay */
+.bg-grid {
+  background-color: var(--cream-100);
+  background-image:
+    linear-gradient(to right, rgba(30,63,168,0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30,63,168,0.10) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.bg-grid-sm {
+  background-color: var(--cream-100);
+  background-image:
+    linear-gradient(to right, rgba(30,63,168,0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30,63,168,0.08) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Tiny star scatter — recreates the pamphlet's confetti texture */
+.bg-stars {
+  background-color: var(--cream-100);
+  background-image:
+    radial-gradient(circle at 12px 18px, var(--cobalt) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 50px 60px, var(--red) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 90px 30px, var(--cobalt) 1px, transparent 1.2px),
+    radial-gradient(circle at 130px 90px, var(--mustard) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 30px 110px, var(--cobalt) 1px, transparent 1.2px),
+    radial-gradient(circle at 160px 140px, var(--red) 1.2px, transparent 1.4px);
+  background-size: 180px 180px;
+}
+
+/* Scalloped circle badge (the "25% off" feel) */
+.scallop {
+  --pts: 16;
+  background: var(--cobalt);
+  color: var(--cream-100);
+  /* Created with conic gradient mask of small circles around perimeter */
+  -webkit-mask:
+    radial-gradient(circle at center, black 60%, transparent 60%),
+    conic-gradient(black 0 360deg);
+}
+
+/* Reusable */
+.font-display { font-family: var(--f-display); font-weight: 400; letter-spacing: -0.01em; }
+.font-mono    { font-family: var(--f-mono); }
+.font-sans    { font-family: var(--f-sans); }
+
+/* Pill / tag */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1.5px solid var(--ink);
+  background: var(--cream-50);
+  color: var(--ink);
+}
+.pill.cobalt { background: var(--cobalt); color: var(--cream-100); border-color: var(--cobalt); }
+.pill.easy   { background: #DCEAD0; color: var(--easy); border-color: var(--easy); }
+.pill.med    { background: #F8E4B6; color: var(--med);  border-color: var(--med); }
+.pill.hard   { background: #F4C9C5; color: var(--hard); border-color: var(--hard); }
+
+/* Hard-edged button */
+.btn {
+  font-family: var(--f-sans); font-weight: 600; font-size: 14px;
+  padding: 12px 20px; border: 2px solid var(--ink);
+  background: var(--cream-50); color: var(--ink);
+  cursor: pointer; transition: transform .08s ease, box-shadow .08s ease;
+  box-shadow: 3px 3px 0 var(--ink);
+  border-radius: 8px;
+  letter-spacing: -0.01em;
+}
+.btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+.btn:active{ transform: translate(2px,2px);  box-shadow: 1px 1px 0 var(--ink); }
+.btn.primary { background: var(--cobalt); color: var(--cream-100); border-color: var(--ink); }
+.btn.danger  { background: var(--red);    color: var(--cream-100); }
+
+/* Reset for canvases */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--f-body); color: var(--ink); }
+button { font-family: inherit; }
