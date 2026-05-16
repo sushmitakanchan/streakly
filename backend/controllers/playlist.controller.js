@@ -90,6 +90,17 @@ export const addProblemToPlaylist = async(req, res)=>{
                 error:"Invalid or missing problemIds"
             })
         }
+        // check for duplicates before inserting
+        const existing = await db.problemInPlaylist.findFirst({
+            where: { playlistId, problemId: { in: problemIds } },
+            include: { playlist: { select: { name: true } } }
+        })
+        if (existing) {
+            return res.status(409).json({
+                error: `Problem already exists in "${existing.playlist.name}"`
+            })
+        }
+
         // create records for each problems in the playlist
         const problemsInPlaylist = await db.problemInPlaylist.createMany({
             data: problemIds.map((problemId)=>({

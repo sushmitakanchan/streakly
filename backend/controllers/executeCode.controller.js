@@ -87,7 +87,7 @@ export const executeCode  = async(req, res)=>{
           : null,
       },
     });
-        // if all passed = true then mark problem as solved for the current user
+        // if all passed = true then mark problem as solved and update streak
         if(allPassed){
             await db.problemSolved.upsert({
                 where:{
@@ -98,6 +98,36 @@ export const executeCode  = async(req, res)=>{
                 update:{},
                 create:{
                     userId, problemId
+                }
+            })
+
+            // Streak update (UTC-based)
+            const user = await db.user.findUnique({
+                where: { id: userId },
+                select: { currentStreak: true, maxStreak: true, lastSolvedDate: true }
+            })
+
+            const today = new Date()
+            today.setUTCHours(0, 0, 0, 0)
+
+            let newStreak
+            if (!user.lastSolvedDate) {
+                newStreak = 1
+            } else {
+                const last = new Date(user.lastSolvedDate)
+                last.setUTCHours(0, 0, 0, 0)
+                const diffDays = Math.round((today - last) / 86400000)
+                if (diffDays === 0) newStreak = user.currentStreak
+                else if (diffDays === 1) newStreak = user.currentStreak + 1
+                else newStreak = 1
+            }
+
+            await db.user.update({
+                where: { id: userId },
+                data: {
+                    currentStreak: newStreak,
+                    maxStreak: Math.max(newStreak, user.maxStreak),
+                    lastSolvedDate: today
                 }
             })
         }
